@@ -1163,7 +1163,14 @@ function selectFoodPreference(element, preference) {
     document.getElementById("dinnerCalories").textContent =
       dinnerCalories + " ккал";
 
+const availableBreakfasts = getAvailableBreakfasts();
 
+breakfast = 0;
+
+if (availableBreakfasts.length > 0) {
+  document.getElementById("breakfastName").textContent =
+    availableBreakfasts[0].name;
+}
     goTo("menu");
 
   }
@@ -1171,26 +1178,81 @@ function selectFoodPreference(element, preference) {
 
   let breakfast = 0;
 
+function getAvailableBreakfasts() {
 
-  function replaceBreakfast() {
+  const breakfasts = [
+    {
+      name: "Омлет с авокадо",
+      tags: []
+    },
+    {
+      name: "Сырники с ягодами",
+      tags: ["Лактоза"]
+    },
+    {
+      name: "Овсянка с бананом и орехами",
+      tags: []
+    },
+    {
+      name: "Яйца с лососем и тостом",
+      tags: ["Рыба"]
+    },
+    {
+      name: "Тофу с авокадо и овощами",
+      tags: ["Вегетарианское"]
+    }
+  ];
 
-    const breakfasts = [
-      "Омлет с авокадо",
-      "Сырники с ягодами",
-      "Овсянка с бананом и орехами",
-      "Яйца с лососем и тостом"
-    ];
+  return breakfasts.filter(item => {
 
-    breakfast++;
-
-    if (breakfast >= breakfasts.length) {
-      breakfast = 0;
+    if (
+      foodPreferences.includes("Без рыбы и морепродуктов") &&
+      item.tags.includes("Рыба")
+    ) {
+      return false;
     }
 
-    document.getElementById("breakfastName").textContent =
-      breakfasts[breakfast];
+    if (
+      foodPreferences.includes("Без лактозы") &&
+      item.tags.includes("Лактоза")
+    ) {
+      return false;
+    }
 
+    if (
+      foodPreferences.includes("Вегетарианское") &&
+      !item.tags.includes("Вегетарианское")
+    ) {
+      return false;
+    }
+
+    return true;
+
+  });
+
+}
+
+
+function replaceBreakfast() {
+
+  const breakfasts = getAvailableBreakfasts();
+
+  if (breakfasts.length === 0) {
+    document.getElementById("breakfastName").textContent =
+      "Подберём подходящий завтрак";
+    return;
   }
+
+  breakfast++;
+
+  if (breakfast >= breakfasts.length) {
+    breakfast = 0;
+  }
+
+  document.getElementById("breakfastName").textContent =
+    breakfasts[breakfast].name;
+
+}
 
 
   function testWeek() {
