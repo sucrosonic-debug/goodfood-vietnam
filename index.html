@@ -619,7 +619,7 @@
 
     </div>
 
-    <button class="primary" onclick="buildMenu()">
+    <button class="primary" onclick="goTo('preferences')"
       Показать мой рацион →
     </button>
 
@@ -629,7 +629,93 @@
 
   </section>
 
+  <!-- ПРЕДПОЧТЕНИЯ -->
+  <section class="screen" id="preferences">
 
+    <div class="progress">
+      <div class="done"></div>
+      <div class="done"></div>
+      <div class="done"></div>
+      <div class="done"></div>
+      <div></div>
+    </div>
+
+    <div class="tag">Шаг 4 из 5</div>
+
+    <h2>Что ты предпочитаешь?</h2>
+
+    <p class="subtitle">
+      Выбери продукты, которые нужно исключить из твоего рациона.
+      Можно выбрать несколько вариантов.
+    </p>
+
+    <div class="options">
+
+      <div class="option food-option"
+           onclick="selectFoodPreference(this, 'Без свинины')">
+        <div class="option-icon">🐷</div>
+        <div>
+          <strong>Без свинины</strong>
+          <span>Исключим блюда со свининой</span>
+        </div>
+      </div>
+
+      <div class="option food-option"
+           onclick="selectFoodPreference(this, 'Без говядины')">
+        <div class="option-icon">🥩</div>
+        <div>
+          <strong>Без говядины</strong>
+          <span>Исключим блюда с говядиной</span>
+        </div>
+      </div>
+
+      <div class="option food-option"
+           onclick="selectFoodPreference(this, 'Без рыбы и морепродуктов')">
+        <div class="option-icon">🐟</div>
+        <div>
+          <strong>Без рыбы и морепродуктов</strong>
+          <span>Рыбу и морепродукты не добавляем</span>
+        </div>
+      </div>
+
+      <div class="option food-option"
+           onclick="selectFoodPreference(this, 'Вегетарианское')">
+        <div class="option-icon">🌱</div>
+        <div>
+          <strong>Вегетарианское</strong>
+          <span>Без мяса и рыбы</span>
+        </div>
+      </div>
+
+      <div class="option food-option"
+           onclick="selectFoodPreference(this, 'Без лактозы')">
+        <div class="option-icon">🥛</div>
+        <div>
+          <strong>Без лактозы</strong>
+          <span>Исключим обычные молочные продукты</span>
+        </div>
+      </div>
+
+      <div class="option food-option"
+           onclick="selectFoodPreference(this, 'Без острого')">
+        <div class="option-icon">🌶️</div>
+        <div>
+          <strong>Без острого</strong>
+          <span>Только неострые блюда</span>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="primary" onclick="buildMenu()">
+      Собрать мой рацион →
+    </button>
+
+    <button class="secondary" onclick="goTo('result')">
+      Назад
+    </button>
+
+  </section>
   <!-- МЕНЮ -->
   <section class="screen" id="menu">
 
@@ -1005,7 +1091,26 @@
 
   }
 
+let foodPreferences = [];
 
+function selectFoodPreference(element, preference) {
+
+  if (foodPreferences.includes(preference)) {
+
+    foodPreferences = foodPreferences.filter(
+      item => item !== preference
+    );
+
+    element.classList.remove("selected");
+
+  } else {
+
+    foodPreferences.push(preference);
+    element.classList.add("selected");
+
+  }
+
+}
   function buildMenu() {
 
     document.getElementById("goalTag").textContent =
@@ -1102,19 +1207,22 @@
 
 
     const message =
-      "Заявка на тест GoodFood\n" +
-      "Цель: " + selectedGoal + "\n" +
-      "Пол: " +
-      (selectedGender === "male" ? "Мужской" : "Женский") +
-      "\n" +
-      "Возраст: " + age + "\n" +
-      "Рост: " + height + " см\n" +
-      "Вес: " + weight + " кг\n" +
-      "Калорийность: " + selectedCalories + " ккал\n" +
-      "БЖУ: " +
-      protein + "/" +
-      fat + "/" +
-      carbs;
+  "Заявка на тест GoodFood\n" +
+  "Цель: " + selectedGoal + "\n" +
+  "Пол: " +
+  (selectedGender === "male" ? "Мужской" : "Женский") +
+  "\n" +
+  "Возраст: " + age + "\n" +
+  "Рост: " + height + " см\n" +
+  "Вес: " + weight + " кг\n" +
+  "Калорийность: " + selectedCalories + " ккал\n" +
+  "Предпочтения: " +
+  (foodPreferences.length ? foodPreferences.join(", ") : "Без ограничений") +
+  "\n" +
+  "БЖУ: " +
+  protein + "/" +
+  fat + "/" +
+  carbs;
 
 
     if (tg) {
