@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7f7f2">
+
+  <title>GoodFood Vietnam</title>
+
+  <!-- Telegram Mini App -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f7f7f2;
+      color: #161616;
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 24px 18px 40px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+      font-weight: 800;
+      font-size: 22px;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: #b7ef56;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 100px;
+      background: #e8f8ca;
+      color: #456b00;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 36px;
+      line-height: 1.08;
+      letter-spacing: -1.4px;
+      margin-bottom: 15px;
+    }
+
+    h2 {
+      font-size: 28px;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #777;
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 26px;
+    }
+
+    .hero-card {
+      background: #1b1b1b;
+      color: white;
+      padding: 24px;
+      border-radius: 26px;
+      margin: 28px 0;
+    }
+
+    .hero-card .small {
+      color: #aaa;
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .hero-number {
+      font-size: 34px;
+      font-weight: 800;
+    }
+
+    .macros {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .macro {
+      background: #292929;
+      padding: 12px 8px;
+      border-radius: 14px;
+      text-align: center;
+    }
+
+    .macro strong {
+      display: block;
+      font-size: 17px;
+    }
+
+    .macro span {
+      color: #999;
+      font-size: 11px;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      padding: 17px;
+      border-radius: 17px;
+      font-size: 16px;
+      font-weight: 750;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .primary {
+      background: #b7ef56;
+      color: #152000;
+    }
+
+    .secondary {
+      background: #ecece6;
+      color: #222;
+      margin-top: 10px;
+    }
+
+    .options {
+      display: grid;
+      gap: 11px;
+      margin: 24px 0;
+    }
+
+    .option {
+      background: white;
+      border: 2px solid transparent;
+      padding: 18px;
+      border-radius: 19px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .option.selected {
+      border-color: #9bd53d;
+      background: #f5ffe5;
+    }
+
+    .option-icon {
+      font-size: 28px;
+    }
+
+    .option strong {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 3px;
+    }
+
+    .option span {
+      color: #888;
+      font-size: 13px;
+    }
+
+    .calorie-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 24px 0;
+    }
+
+    .calorie {
+      background: white;
+      border: 2px solid transparent;
+      border-radius: 18px;
+      padding: 20px 10px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .calorie.selected {
+      border-color: #9bd53d;
+      background: #f5ffe5;
+    }
+
+    .calorie strong {
+      display: block;
+      font-size: 22px;
+    }
+
+    .calorie span {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .meal {
+      background: white;
+      border-radius: 20px;
+      padding: 17px;
+      margin-bottom: 11px;
+    }
+
+    .meal-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .meal-type {
+      color: #888;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .meal-name {
+      font-weight: 750;
+      font-size: 16px;
+    }
+
+    .meal-calories {
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .meal-macros {
+      color: #888;
+      font-size: 12px;
+      margin-top: 9px;
+    }
+
+    .replace {
+      margin-top: 12px;
+      background: #f0f0eb;
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .summary {
+      background: #1b1b1b;
+      color: white;
+      border-radius: 22px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .summary-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .progress {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 25px;
+    }
+
+    .progress div {
+      height: 5px;
+      flex: 1;
+      background: #ddd;
+      border-radius: 10px;
+    }
+
+    .progress .done {
+      background: #9bd53d;
+    }
+
+    .city {
+      margin-top: 18px;
+      text-align: center;
+      color: #888;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="logo">
+    <div class="logo-icon">🥗</div>
+    GoodFood
+  </div>
+
+  <!-- ГЛАВНАЯ -->
+  <section class="screen active" id="home">
+
+    <div class="tag">🇻🇳 Тестовый запуск в Дананге</div>
+
+    <h1>Питание,<br>собранное под тебя.</h1>
+
+    <p class="subtitle">
+      Выбери свою цель, калорийность и получи готовый рацион на день.
+      Калории и БЖУ уже рассчитаны.
+    </p>
+
+    <div class="hero-card">
+      <div class="small">Пример рациона</div>
+      <div class="hero-number">1 800 ккал</div>
+
+      <div class="macros">
+        <div class="macro">
+          <strong>125 г</strong>
+          <span>БЕЛКИ</span>
+        </div>
+
+        <div class="macro">
+          <strong>60 г</strong>
+          <span>ЖИРЫ</span>
+        </div>
+
+        <div class="macro">
+          <strong>190 г</strong>
+          <span>УГЛЕВОДЫ</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="primary" onclick="goTo('goal')">
+      Собрать мой рацион →
+    </button>
+
+    <div class="city">GoodFood Vietnam • Da Nang</div>
+
+  </section>
+
+
+  <!-- ЦЕЛЬ -->
+  <section class="screen" id="goal">
+
+    <div class="progress">
+      <div class="done"></div>
+      <div></div>
+      <div></div>
+    </div>
+
+    <h2>Какая у тебя цель?</h2>
+
+    <p class="subtitle">
+      Мы подберём рацион под твои задачи.
+    </p>
+
+    <div class="options">
+
+      <div class="option" onclick="selectGoal(this, 'Похудение')">
+        <div class="option-icon">🔥</div>
+        <div>
+          <strong>Похудение</strong>
+          <span>Дефицит калорий</span>
+        </div>
+      </div>
+
+      <div class="option" onclick="selectGoal(this, 'Поддержание')">
+        <div class="option-icon">⚖️</div>
+        <div>
+          <strong>Поддержание</strong>
+          <span>Сохранять текущую форму</span>
+        </div>
+      </div>
+
+      <div class="option" onclick="selectGoal(this, 'Набор массы')">
+        <div class="option-icon">💪</div>
+        <div>
+          <strong>Набор массы</strong>
+          <span>Больше энергии и белка</span>
+        </div>
+      </div>
+
+      <div class="option" onclick="selectGoal(this, 'Здоровое питание')">
+        <div class="option-icon">🥑</div>
+        <div>
+          <strong>Просто питаться лучше</strong>
+          <span>Сбалансированный рацион</span>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="primary" onclick="goTo('calories')">
+      Продолжить →
+    </button>
+
+    <button class="secondary" onclick="goTo('home')">
+      Назад
+    </button>
+
+  </section>
+
+
+  <!-- КАЛОРИИ -->
+  <section class="screen" id="calories">
+
+    <div class="progress">
+      <div class="done"></div>
+      <div class="done"></div>
+      <div></div>
+    </div>
+
+    <h2>Выбери калорийность</h2>
+
+    <p class="subtitle">
+      Для теста выбери подходящий дневной рацион.
+    </p>
+
+    <div class="calorie-options">
+
+      <div class="calorie" onclick="selectCalories(this, 1400)">
+        <strong>1400</strong>
+        <span>ккал</span>
+      </div>
+
+      <div class="calorie" onclick="selectCalories(this, 1600)">
+        <strong>1600</strong>
+        <span>ккал</span>
+      </div>
+
+      <div class="calorie selected" onclick="selectCalories(this, 1800)">
+        <strong>1800</strong>
+        <span>ккал</span>
+      </div>
+
+      <div class="calorie" onclick="selectCalories(this, 2000)">
+        <strong>2000</strong>
+        <span>ккал</span>
+      </div>
+
+      <div class="calorie" onclick="selectCalories(this, 2200)">
+        <strong>2200</strong>
+        <span>ккал</span>
+      </div>
+
+      <div class="calorie" onclick="selectCalories(this, 2500)">
+        <strong>2500</strong>
+        <span>ккал</span>
+      </div>
+
+    </div>
+
+    <button class="primary" onclick="buildMenu()">
+      Показать мой рацион →
+    </button>
+
+    <button class="secondary" onclick="goTo('goal')">
+      Назад
+    </button>
+
+  </section>
+
+
+  <!-- МЕНЮ -->
+  <section class="screen" id="menu">
+
+    <div class="progress">
+      <div class="done"></div>
+      <div class="done"></div>
+      <div class="done"></div>
+    </div>
+
+    <div class="tag" id="goalTag">Твой рацион</div>
+
+    <h2>Меню на сегодня</h2>
+
+    <p class="subtitle">
+      Мы собрали пример дневного рациона.
+    </p>
+
+    <div class="meal">
+      <div class="meal-top">
+        <div>
+          <div class="meal-type">ЗАВТРАК</div>
+          <div class="meal-name" id="breakfastName">
+            Омлет с авокадо
+          </div>
+        </div>
+        <div class="meal-calories">420 ккал</div>
+      </div>
+
+      <div class="meal-macros">
+        Б 28 г • Ж 19 г • У 32 г
+      </div>
+
+      <button class="replace" onclick="replaceBreakfast()">
+        🔄 Заменить блюдо
+      </button>
+    </div>
+
+
+    <div class="meal">
+      <div class="meal-top">
+        <div>
+          <div class="meal-type">ОБЕД</div>
+          <div class="meal-name">
+            Курица терияки с рисом
+          </div>
+        </div>
+        <div class="meal-calories">610 ккал</div>
+      </div>
+
+      <div class="meal-macros">
+        Б 46 г • Ж 16 г • У 68 г
+      </div>
+    </div>
+
+
+    <div class="meal">
+      <div class="meal-top">
+        <div>
+          <div class="meal-type">ПЕРЕКУС</div>
+          <div class="meal-name">
+            Йогурт с гранолой и фруктами
+          </div>
+        </div>
+        <div class="meal-calories">280 ккал</div>
+      </div>
+
+      <div class="meal-macros">
+        Б 16 г • Ж 8 г • У 36 г
+      </div>
+    </div>
+
+
+    <div class="meal">
+      <div class="meal-top">
+        <div>
+          <div class="meal-type">УЖИН</div>
+          <div class="meal-name">
+            Лосось с овощами
+          </div>
+        </div>
+        <div class="meal-calories">490 ккал</div>
+      </div>
+
+      <div class="meal-macros">
+        Б 38 г • Ж 21 г • У 31 г
+      </div>
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-row">
+        <span>Твоя цель</span>
+        <strong id="summaryGoal">—</strong>
+      </div>
+
+      <div class="summary-row">
+        <span>Рацион</span>
+        <strong id="summaryCalories">1800 ккал</strong>
+      </div>
+
+      <div class="summary-row">
+        <span>Приёмов пищи</span>
+        <strong>4</strong>
+      </div>
+
+    </div>
+
+    <button class="primary" onclick="testWeek()">
+      🍱 Хочу попробовать неделю
+    </button>
+
+    <button class="secondary" onclick="goTo('calories')">
+      Изменить рацион
+    </button>
+
+  </section>
+
+</div>
+
+
+<script>
+  let selectedGoal = "Здоровое питание";
+  let selectedCalories = 1800;
+
+  const tg = window.Telegram?.WebApp;
+
+  if (tg) {
+    tg.ready();
+    tg.expand();
+  }
+
+  function goTo(id) {
+    document.querySelectorAll(".screen").forEach(screen => {
+      screen.classList.remove("active");
+    });
+
+    document.getElementById(id).classList.add("active");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+  function selectGoal(element, goal) {
+    document.querySelectorAll(".option").forEach(item => {
+      item.classList.remove("selected");
+    });
+
+    element.classList.add("selected");
+    selectedGoal = goal;
+  }
+
+  function selectCalories(element, calories) {
+    document.querySelectorAll(".calorie").forEach(item => {
+      item.classList.remove("selected");
+    });
+
+    element.classList.add("selected");
+    selectedCalories = calories;
+  }
+
+  function buildMenu() {
+    document.getElementById("goalTag").textContent = selectedGoal;
+    document.getElementById("summaryGoal").textContent = selectedGoal;
+    document.getElementById("summaryCalories").textContent =
+      selectedCalories + " ккал";
+
+    goTo("menu");
+  }
+
+  let breakfast = 0;
+
+  function replaceBreakfast() {
+    const breakfasts = [
+      "Омлет с авокадо",
+      "Сырники с ягодами",
+      "Овсянка с бананом и орехами",
+      "Яйца с лососем и тостом"
+    ];
+
+    breakfast++;
+
+    if (breakfast >= breakfasts.length) {
+      breakfast = 0;
+    }
+
+    document.getElementById("breakfastName").textContent =
+      breakfasts[breakfast];
+  }
+
+  function testWeek() {
+    const message =
+      "Заявка на тест GoodFood\n" +
+      "Цель: " + selectedGoal + "\n" +
+      "Калорийность: " + selectedCalories + " ккал";
+
+    if (tg) {
+      try {
+        tg.sendData(message);
+        tg.showAlert("Спасибо! Заявка на тест сохранена 🍱");
+      } catch (error) {
+        alert("Спасибо! Интерес к тесту отмечен 🍱");
+      }
+    } else {
+      alert("Спасибо! Интерес к тесту отмечен 🍱");
+    }
+  }
+</script>
+
+</body>
+</html>
