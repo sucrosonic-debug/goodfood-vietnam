@@ -1,24 +1,52 @@
 import os
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
 import telebot
 from telebot.types import InlineKeyboardMarkup, WebAppInfo, InlineKeyboardButton
 
+
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
+MINI_APP_URL = "https://sucrosonic-debug.github.io/goodfood-vietnam/"
+
+if not BOT_TOKEN:
+    raise RuntimeError("BOT_TOKEN is not set")
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
-MINI_APP_URL = "https://sucrosonic-debug.github.io/goodfood-vietnam/"
 
+# --- Маленький сервер для Render ---
+
+class HealthHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(b"GoodFood Vietnam bot is running")
+
+    def log_message(self, format, *args):
+        return
+
+
+def run_web_server():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(("0.0.0.0", port), HealthHandler)
+    print(f"Render health server started on port {port}", flush=True)
+    server.serve_forever()
+
+
+# --- Telegram ---
 
 @bot.message_handler(commands=["start"])
 def start(message):
     keyboard = InlineKeyboardMarkup()
 
-    open_app = InlineKeyboardButton(
-        text="🍱 Открыть GoodFood",
-        web_app=WebAppInfo(MINI_APP_URL)
+    keyboard.add(
+        InlineKeyboardButton(
+            text="🍱 Открыть GoodFood",
+            web_app=WebAppInfo(MINI_APP_URL)
+        )
     )
-
-    keyboard.add(open_app)
 
     bot.send_message(
         message.chat.id,
@@ -67,6 +95,16 @@ def help_command(message):
     )
 
 
-print("GoodFood bot started")
+if __name__ == "__main__":
+    threading.Thread(
+        target=run_web_server,
+        daemon=True
+    ).start()
 
-bot.infinity_polling()
+    print("GoodFood Telegram bot started", flush=True)
+
+    bot.infinity_polling(
+        skip_pending=True,
+        timeout=30,
+        long_polling_timeout=30
+    )
