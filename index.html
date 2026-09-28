@@ -195,35 +195,81 @@
       font-size: 13px;
     }
 
-    .calorie-options {
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 7px;
+      color: #555;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      border: 2px solid transparent;
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      font-size: 16px;
+      color: #161616;
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #9bd53d;
+    }
+
+    .gender-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin: 24px 0;
+      margin-bottom: 18px;
     }
 
-    .calorie {
+    .gender {
       background: white;
       border: 2px solid transparent;
-      border-radius: 18px;
-      padding: 20px 10px;
+      padding: 17px 10px;
+      border-radius: 17px;
       text-align: center;
       cursor: pointer;
+      font-weight: 700;
     }
 
-    .calorie.selected {
+    .gender.selected {
       border-color: #9bd53d;
       background: #f5ffe5;
     }
 
-    .calorie strong {
-      display: block;
-      font-size: 22px;
+    .result-card {
+      background: #1b1b1b;
+      color: white;
+      padding: 24px;
+      border-radius: 26px;
+      margin: 24px 0;
     }
 
-    .calorie span {
-      font-size: 12px;
-      color: #888;
+    .result-label {
+      color: #aaa;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .result-number {
+      font-size: 38px;
+      font-weight: 800;
+    }
+
+    .result-description {
+      color: #aaa;
+      font-size: 13px;
+      margin-top: 8px;
+      line-height: 1.4;
     }
 
     .meal {
@@ -280,6 +326,7 @@
     .summary-row {
       display: flex;
       justify-content: space-between;
+      gap: 15px;
       margin-bottom: 8px;
     }
 
@@ -310,6 +357,13 @@
       color: #888;
       font-size: 12px;
     }
+
+    .error {
+      color: #c43c3c;
+      font-size: 13px;
+      margin: -8px 0 15px;
+      display: none;
+    }
   </style>
 </head>
 
@@ -330,8 +384,8 @@
     <h1>Питание,<br>собранное под тебя.</h1>
 
     <p class="subtitle">
-      Выбери свою цель, калорийность и получи готовый рацион на день.
-      Калории и БЖУ уже рассчитаны.
+      Расскажи немного о себе, а мы рассчитаем калорийность
+      и соберём пример рациона на день.
     </p>
 
     <div class="hero-card">
@@ -372,12 +426,15 @@
       <div class="done"></div>
       <div></div>
       <div></div>
+      <div></div>
     </div>
+
+    <div class="tag">Шаг 1 из 4</div>
 
     <h2>Какая у тебя цель?</h2>
 
     <p class="subtitle">
-      Мы подберём рацион под твои задачи.
+      Это поможет рассчитать подходящую калорийность.
     </p>
 
     <div class="options">
@@ -385,15 +442,15 @@
       <div class="option" onclick="selectGoal(this, 'Похудение')">
         <div class="option-icon">🔥</div>
         <div>
-          <strong>Похудение</strong>
-          <span>Дефицит калорий</span>
+          <strong>Похудеть</strong>
+          <span>Умеренный дефицит калорий</span>
         </div>
       </div>
 
       <div class="option" onclick="selectGoal(this, 'Поддержание')">
         <div class="option-icon">⚖️</div>
         <div>
-          <strong>Поддержание</strong>
+          <strong>Поддерживать вес</strong>
           <span>Сохранять текущую форму</span>
         </div>
       </div>
@@ -401,8 +458,8 @@
       <div class="option" onclick="selectGoal(this, 'Набор массы')">
         <div class="option-icon">💪</div>
         <div>
-          <strong>Набор массы</strong>
-          <span>Больше энергии и белка</span>
+          <strong>Набрать массу</strong>
+          <span>Профицит калорий</span>
         </div>
       </div>
 
@@ -416,7 +473,11 @@
 
     </div>
 
-    <button class="primary" onclick="goTo('calories')">
+    <div class="error" id="goalError">
+      Сначала выбери цель.
+    </div>
+
+    <button class="primary" onclick="continueFromGoal()">
       Продолжить →
     </button>
 
@@ -427,51 +488,133 @@
   </section>
 
 
-  <!-- КАЛОРИИ -->
-  <section class="screen" id="calories">
+  <!-- ДАННЫЕ -->
+  <section class="screen" id="profile">
 
     <div class="progress">
       <div class="done"></div>
       <div class="done"></div>
       <div></div>
+      <div></div>
     </div>
 
-    <h2>Выбери калорийность</h2>
+    <div class="tag">Шаг 2 из 4</div>
+
+    <h2>Расскажи немного о себе</h2>
 
     <p class="subtitle">
-      Для теста выбери подходящий дневной рацион.
+      Используем эти данные, чтобы примерно рассчитать твою
+      дневную потребность в энергии.
     </p>
 
-    <div class="calorie-options">
+    <div class="form-group">
+      <label>Пол</label>
 
-      <div class="calorie" onclick="selectCalories(this, 1400)">
-        <strong>1400</strong>
-        <span>ккал</span>
+      <div class="gender-grid">
+        <div class="gender" onclick="selectGender(this, 'male')">
+          👨 Мужской
+        </div>
+
+        <div class="gender" onclick="selectGender(this, 'female')">
+          👩 Женский
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="age">Возраст</label>
+      <input id="age" type="number" inputmode="numeric"
+             placeholder="Например, 25" min="16" max="90">
+    </div>
+
+    <div class="form-group">
+      <label for="height">Рост, см</label>
+      <input id="height" type="number" inputmode="numeric"
+             placeholder="Например, 178" min="130" max="230">
+    </div>
+
+    <div class="form-group">
+      <label for="weight">Вес, кг</label>
+      <input id="weight" type="number" inputmode="decimal"
+             placeholder="Например, 75" min="35" max="250">
+    </div>
+
+    <div class="form-group">
+      <label for="activity">Активность</label>
+
+      <select id="activity">
+        <option value="">Выбери уровень активности</option>
+        <option value="1.2">Минимальная — почти нет тренировок</option>
+        <option value="1.375">Лёгкая — 1–3 тренировки в неделю</option>
+        <option value="1.55">Средняя — 3–5 тренировок в неделю</option>
+        <option value="1.725">Высокая — 6–7 тренировок в неделю</option>
+      </select>
+    </div>
+
+    <div class="error" id="profileError">
+      Заполни все поля корректно.
+    </div>
+
+    <button class="primary" onclick="calculateNutrition()">
+      Рассчитать мой рацион →
+    </button>
+
+    <button class="secondary" onclick="goTo('goal')">
+      Назад
+    </button>
+
+  </section>
+
+
+  <!-- РАСЧЁТ -->
+  <section class="screen" id="result">
+
+    <div class="progress">
+      <div class="done"></div>
+      <div class="done"></div>
+      <div class="done"></div>
+      <div></div>
+    </div>
+
+    <div class="tag">Шаг 3 из 4</div>
+
+    <h2>Твоя калорийность готова</h2>
+
+    <p class="subtitle">
+      Это ориентировочная рекомендация на основе указанных данных.
+    </p>
+
+    <div class="result-card">
+
+      <div class="result-label">
+        Рекомендуем на день
       </div>
 
-      <div class="calorie" onclick="selectCalories(this, 1600)">
-        <strong>1600</strong>
-        <span>ккал</span>
+      <div class="result-number">
+        <span id="resultCalories">1800</span> ккал
       </div>
 
-      <div class="calorie selected" onclick="selectCalories(this, 1800)">
-        <strong>1800</strong>
-        <span>ккал</span>
+      <div class="result-description" id="resultText">
+        Калорийность подобрана под твою цель.
       </div>
 
-      <div class="calorie" onclick="selectCalories(this, 2000)">
-        <strong>2000</strong>
-        <span>ккал</span>
-      </div>
+      <div class="macros">
 
-      <div class="calorie" onclick="selectCalories(this, 2200)">
-        <strong>2200</strong>
-        <span>ккал</span>
-      </div>
+        <div class="macro">
+          <strong id="proteinValue">125 г</strong>
+          <span>БЕЛКИ</span>
+        </div>
 
-      <div class="calorie" onclick="selectCalories(this, 2500)">
-        <strong>2500</strong>
-        <span>ккал</span>
+        <div class="macro">
+          <strong id="fatValue">60 г</strong>
+          <span>ЖИРЫ</span>
+        </div>
+
+        <div class="macro">
+          <strong id="carbsValue">190 г</strong>
+          <span>УГЛЕВОДЫ</span>
+        </div>
+
       </div>
 
     </div>
@@ -480,8 +623,8 @@
       Показать мой рацион →
     </button>
 
-    <button class="secondary" onclick="goTo('goal')">
-      Назад
+    <button class="secondary" onclick="goTo('profile')">
+      Изменить данные
     </button>
 
   </section>
@@ -494,17 +637,22 @@
       <div class="done"></div>
       <div class="done"></div>
       <div class="done"></div>
+      <div class="done"></div>
     </div>
 
-    <div class="tag" id="goalTag">Твой рацион</div>
+    <div class="tag" id="goalTag">
+      Твой рацион
+    </div>
 
     <h2>Меню на сегодня</h2>
 
     <p class="subtitle">
-      Мы собрали пример дневного рациона.
+      Пример дневного рациона под твою рассчитанную калорийность.
     </p>
 
+
     <div class="meal">
+
       <div class="meal-top">
         <div>
           <div class="meal-type">ЗАВТРАК</div>
@@ -512,7 +660,10 @@
             Омлет с авокадо
           </div>
         </div>
-        <div class="meal-calories">420 ккал</div>
+
+        <div class="meal-calories" id="breakfastCalories">
+          420 ккал
+        </div>
       </div>
 
       <div class="meal-macros">
@@ -522,10 +673,12 @@
       <button class="replace" onclick="replaceBreakfast()">
         🔄 Заменить блюдо
       </button>
+
     </div>
 
 
     <div class="meal">
+
       <div class="meal-top">
         <div>
           <div class="meal-type">ОБЕД</div>
@@ -533,16 +686,21 @@
             Курица терияки с рисом
           </div>
         </div>
-        <div class="meal-calories">610 ккал</div>
+
+        <div class="meal-calories" id="lunchCalories">
+          610 ккал
+        </div>
       </div>
 
       <div class="meal-macros">
         Б 46 г • Ж 16 г • У 68 г
       </div>
+
     </div>
 
 
     <div class="meal">
+
       <div class="meal-top">
         <div>
           <div class="meal-type">ПЕРЕКУС</div>
@@ -550,16 +708,21 @@
             Йогурт с гранолой и фруктами
           </div>
         </div>
-        <div class="meal-calories">280 ккал</div>
+
+        <div class="meal-calories" id="snackCalories">
+          280 ккал
+        </div>
       </div>
 
       <div class="meal-macros">
         Б 16 г • Ж 8 г • У 36 г
       </div>
+
     </div>
 
 
     <div class="meal">
+
       <div class="meal-top">
         <div>
           <div class="meal-type">УЖИН</div>
@@ -567,12 +730,16 @@
             Лосось с овощами
           </div>
         </div>
-        <div class="meal-calories">490 ккал</div>
+
+        <div class="meal-calories" id="dinnerCalories">
+          490 ккал
+        </div>
       </div>
 
       <div class="meal-macros">
         Б 38 г • Ж 21 г • У 31 г
       </div>
+
     </div>
 
 
@@ -584,8 +751,13 @@
       </div>
 
       <div class="summary-row">
-        <span>Рацион</span>
-        <strong id="summaryCalories">1800 ккал</strong>
+        <span>Калорийность</span>
+        <strong id="summaryCalories">—</strong>
+      </div>
+
+      <div class="summary-row">
+        <span>БЖУ</span>
+        <strong id="summaryMacros">—</strong>
       </div>
 
       <div class="summary-row">
@@ -595,11 +767,12 @@
 
     </div>
 
+
     <button class="primary" onclick="testWeek()">
       🍱 Хочу попробовать неделю
     </button>
 
-    <button class="secondary" onclick="goTo('calories')">
+    <button class="secondary" onclick="goTo('result')">
       Изменить рацион
     </button>
 
@@ -609,8 +782,14 @@
 
 
 <script>
-  let selectedGoal = "Здоровое питание";
+
+  let selectedGoal = "";
+  let selectedGender = "";
+
   let selectedCalories = 1800;
+  let protein = 0;
+  let fat = 0;
+  let carbs = 0;
 
   const tg = window.Telegram?.WebApp;
 
@@ -619,7 +798,9 @@
     tg.expand();
   }
 
+
   function goTo(id) {
+
     document.querySelectorAll(".screen").forEach(screen => {
       screen.classList.remove("active");
     });
@@ -630,38 +811,265 @@
       top: 0,
       behavior: "smooth"
     });
+
   }
 
+
   function selectGoal(element, goal) {
+
     document.querySelectorAll(".option").forEach(item => {
       item.classList.remove("selected");
     });
 
     element.classList.add("selected");
+
     selectedGoal = goal;
+
+    document.getElementById("goalError").style.display = "none";
+
   }
 
-  function selectCalories(element, calories) {
-    document.querySelectorAll(".calorie").forEach(item => {
+
+  function continueFromGoal() {
+
+    if (!selectedGoal) {
+      document.getElementById("goalError").style.display = "block";
+      return;
+    }
+
+    goTo("profile");
+
+  }
+
+
+  function selectGender(element, gender) {
+
+    document.querySelectorAll(".gender").forEach(item => {
       item.classList.remove("selected");
     });
 
     element.classList.add("selected");
-    selectedCalories = calories;
+
+    selectedGender = gender;
+
   }
+
+
+  function calculateNutrition() {
+
+    const age = Number(document.getElementById("age").value);
+    const height = Number(document.getElementById("height").value);
+    const weight = Number(document.getElementById("weight").value);
+    const activity = Number(document.getElementById("activity").value);
+
+    const error = document.getElementById("profileError");
+
+    if (
+      !selectedGender ||
+      !age ||
+      !height ||
+      !weight ||
+      !activity ||
+      age < 16 ||
+      age > 90 ||
+      height < 130 ||
+      height > 230 ||
+      weight < 35 ||
+      weight > 250
+    ) {
+
+      error.style.display = "block";
+      return;
+
+    }
+
+    error.style.display = "none";
+
+
+    /*
+      Формула Mifflin-St Jeor
+      BMR = базовый обмен веществ
+    */
+
+    let bmr;
+
+    if (selectedGender === "male") {
+
+      bmr =
+        10 * weight +
+        6.25 * height -
+        5 * age +
+        5;
+
+    } else {
+
+      bmr =
+        10 * weight +
+        6.25 * height -
+        5 * age -
+        161;
+
+    }
+
+
+    let maintenance = bmr * activity;
+
+
+    if (selectedGoal === "Похудение") {
+
+      selectedCalories = maintenance * 0.85;
+
+    } else if (selectedGoal === "Набор массы") {
+
+      selectedCalories = maintenance * 1.10;
+
+    } else {
+
+      selectedCalories = maintenance;
+
+    }
+
+
+    /*
+      Округляем до ближайших 50 ккал
+    */
+
+    selectedCalories =
+      Math.round(selectedCalories / 50) * 50;
+
+
+    /*
+      Примерное распределение БЖУ:
+      белок = 1.8 г / кг
+      жир = 0.8 г / кг
+      остаток калорий — углеводы
+    */
+
+    protein = Math.round(weight * 1.8);
+
+    fat = Math.round(weight * 0.8);
+
+    const usedCalories =
+      protein * 4 +
+      fat * 9;
+
+    carbs =
+      Math.round(
+        Math.max(0, selectedCalories - usedCalories) / 4
+      );
+
+
+    document.getElementById("resultCalories").textContent =
+      selectedCalories.toLocaleString("ru-RU");
+
+    document.getElementById("proteinValue").textContent =
+      protein + " г";
+
+    document.getElementById("fatValue").textContent =
+      fat + " г";
+
+    document.getElementById("carbsValue").textContent =
+      carbs + " г";
+
+
+    let description = "";
+
+    if (selectedGoal === "Похудение") {
+
+      description =
+        "Мы рассчитали умеренный дефицит калорий для снижения веса.";
+
+    } else if (selectedGoal === "Набор массы") {
+
+      description =
+        "Мы добавили небольшой профицит калорий для набора массы.";
+
+    } else if (selectedGoal === "Поддержание") {
+
+      description =
+        "Рацион рассчитан примерно на поддержание текущего веса.";
+
+    } else {
+
+      description =
+        "Рацион рассчитан для сбалансированного ежедневного питания.";
+
+    }
+
+
+    document.getElementById("resultText").textContent =
+      description;
+
+
+    goTo("result");
+
+  }
+
 
   function buildMenu() {
-    document.getElementById("goalTag").textContent = selectedGoal;
-    document.getElementById("summaryGoal").textContent = selectedGoal;
+
+    document.getElementById("goalTag").textContent =
+      selectedGoal;
+
+    document.getElementById("summaryGoal").textContent =
+      selectedGoal;
+
     document.getElementById("summaryCalories").textContent =
-      selectedCalories + " ккал";
+      selectedCalories.toLocaleString("ru-RU") + " ккал";
+
+    document.getElementById("summaryMacros").textContent =
+      "Б " + protein +
+      " • Ж " + fat +
+      " • У " + carbs;
+
+
+    /*
+      Распределяем калории по 4 приёмам пищи:
+      25% завтрак
+      35% обед
+      15% перекус
+      25% ужин
+    */
+
+    const breakfastCalories =
+      Math.round(selectedCalories * 0.25 / 10) * 10;
+
+    const lunchCalories =
+      Math.round(selectedCalories * 0.35 / 10) * 10;
+
+    const snackCalories =
+      Math.round(selectedCalories * 0.15 / 10) * 10;
+
+    const dinnerCalories =
+      selectedCalories -
+      breakfastCalories -
+      lunchCalories -
+      snackCalories;
+
+
+    document.getElementById("breakfastCalories").textContent =
+      breakfastCalories + " ккал";
+
+    document.getElementById("lunchCalories").textContent =
+      lunchCalories + " ккал";
+
+    document.getElementById("snackCalories").textContent =
+      snackCalories + " ккал";
+
+    document.getElementById("dinnerCalories").textContent =
+      dinnerCalories + " ккал";
+
 
     goTo("menu");
+
   }
+
 
   let breakfast = 0;
 
+
   function replaceBreakfast() {
+
     const breakfasts = [
       "Омлет с авокадо",
       "Сырники с ягодами",
@@ -677,25 +1085,66 @@
 
     document.getElementById("breakfastName").textContent =
       breakfasts[breakfast];
+
   }
 
+
   function testWeek() {
+
+    const age =
+      document.getElementById("age").value;
+
+    const height =
+      document.getElementById("height").value;
+
+    const weight =
+      document.getElementById("weight").value;
+
+
     const message =
       "Заявка на тест GoodFood\n" +
       "Цель: " + selectedGoal + "\n" +
-      "Калорийность: " + selectedCalories + " ккал";
+      "Пол: " +
+      (selectedGender === "male" ? "Мужской" : "Женский") +
+      "\n" +
+      "Возраст: " + age + "\n" +
+      "Рост: " + height + " см\n" +
+      "Вес: " + weight + " кг\n" +
+      "Калорийность: " + selectedCalories + " ккал\n" +
+      "БЖУ: " +
+      protein + "/" +
+      fat + "/" +
+      carbs;
+
 
     if (tg) {
+
       try {
+
         tg.sendData(message);
-        tg.showAlert("Спасибо! Заявка на тест сохранена 🍱");
+
+        tg.showAlert(
+          "Спасибо! Заявка на тест GoodFood сохранена 🍱"
+        );
+
       } catch (error) {
-        alert("Спасибо! Интерес к тесту отмечен 🍱");
+
+        alert(
+          "Спасибо! Интерес к тесту отмечен 🍱"
+        );
+
       }
+
     } else {
-      alert("Спасибо! Интерес к тесту отмечен 🍱");
+
+      alert(
+        "Спасибо! Интерес к тесту отмечен 🍱"
+      );
+
     }
+
   }
+
 </script>
 
 </body>
