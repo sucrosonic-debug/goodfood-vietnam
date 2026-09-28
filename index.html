@@ -1220,11 +1220,11 @@ function getAvailableBreakfasts() {
     }
 
     if (
-      foodPreferences.includes("Вегетарианское") &&
-      !item.tags.includes("Вегетарианское")
-    ) {
-      return false;
-    }
+  foodPreferences.includes("Вегетарианское") &&
+  !item.tags.includes("Вегетарианское")
+) {
+  return false;
+}
 
     return true;
 
